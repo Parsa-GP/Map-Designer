@@ -56,6 +56,7 @@ class canvas:
 		gt_loop=self.graphictile[:]
 		gt_loop.reverse()
 		gtloop_len=gt_loop.__len__()
+		pmap = pmap.replace(']', ', ]')
 		for i in range(gtloop_len):
 			#print(f'{i}: {gt_loop[i]}')
 			pmap = pmap.replace(*gt_loop[i])
