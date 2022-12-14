@@ -4,26 +4,30 @@ class Map:
 		self.height = h
 		self.tiles = t
 		self.defaulttile = dti
+		m=[]
 		for i in range(h):
+			l=[]
 			for i in range(w):
-				l = f'{l}{dti}'
-		self.graphictile = list([str(gt.index(i)), i[0]] for i in gt)
-		self.map = 
+				l.append(dti)
+			m.append(l)
+		self.graphictile = list([str(gt.index(i))+', ', i[0]] for i in gt)
+		self.graphictile.reverse()
+		self.map = m
 
-	def map(self):
+	def prmap(self):
 		return self.map
 
 	def fancymap(self):
 		tb = '\u2550' * (self.width + 2)
 		pmap=str(self.map)[1:-1]
 		replist = [
-			['], ', ']\n'], 
-			[', ', ''], 
-			['[', '\u2551 '], 
-			[']', ' \u2551'],
-
 			*self.graphictile
+			,['], ', ']\n'], 
+			['[', '\u2551 '], 
+			[']', ' \u2551']
+			
 		]
+		#print(replist)
 		for i in replist:
 			pmap = pmap.replace(*i)
 		return f'\u2554{tb}\u2557\n{pmap}\n\u255A{tb}\u255D'
@@ -42,7 +46,8 @@ class Map:
 			self.map[y][x] = self.tiles.index(name)
 		else:
 			self.tiles.append(name)
-			self.graphictile.append(tile)
+			print(self.graphictile)
+			self.graphictile.append([name, tile])
 			self.map[y][x] = self.tiles.index(name)
 
 if __name__ == '__main__':
@@ -55,5 +60,6 @@ if __name__ == '__main__':
 	map1 = Map(33,7, tiles[0], tiles[1], 0)
 	for i in range(tiles[0].__len__()):
 		map1.settile(i,0, i)
-	map1.settilecustom(0,2, 'a', 'a')
+	map1.settilecustom(0,2, '1', 'a')
+	print(map1.prmap())
 	print(map1.fancymap())
