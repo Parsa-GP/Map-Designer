@@ -48,6 +48,14 @@ class Map:
 			self.graphictile.append([name, tile])
 			self.map[y][x] = self.tiles.index(name)
 
+	def addtilecustom(self, tile):
+		name=str(self.graphictile.__len__()) + ', '
+		if name in self.tiles:
+			pass
+		else:
+			self.tiles.append(name)
+			self.graphictile.append([name, tile])
+
 if __name__ == '__main__':
 	tiles = [
 		['air','stone','water', 'box', 'thiccline', 'dagger', 'line', 'dot', 
@@ -56,8 +64,9 @@ if __name__ == '__main__':
 			'\u2190', '\u2191', '\u2192', '\u2193']
 	]
 	map1 = Map(33,7, tiles[0], tiles[1], 0)
+	map1.settilecustom(0,1, 'a')
 	for i in range(tiles[0].__len__()):
 		map1.settile(i,0, i)
-	map1.settilecustom(0,2, 'a')
-	#print(map1.prmap())
+	map1.addtilecustom('b')
+	map1.settile(1,1, 13)
 	print(map1.fancymap())
