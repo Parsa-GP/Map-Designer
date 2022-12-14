@@ -5,7 +5,7 @@ themelist = {
 
 def _DEBUGPRT(errcode):
 	# ?
-	if errcode==-1:
+	if errcode==0:
 		pass
 
 	# Create canvas errors
@@ -30,23 +30,25 @@ def _DEBUGPRT(errcode):
 		
 	elif errcode==69:
 		print('[TST] Test Text')
+
+	exit(1)
 	
 
 class canvas:
-	def __init__(self, name='Test', w=16,h=7, t=['air', 'block'], gt=[' ', '\u2588'], dti=0, th='twoline'):
+	def __init__(self, w=16,h=7, t=['air', 'block'], gt=[' ', '\u2588'], dti=0, th='twoline', n='Test'):
 		if w<16:
-			_DEBUGPRT(11)
-		elif h<7:
-			_DEBUGPRT(12)
+			_DEBUGPRT(101)
+		elif h<5:
+			_DEBUGPRT(102)
 		elif dti<0:
-			_DEBUGPRT(15)
+			_DEBUGPRT(105)
 		elif len(t)==0:
-			_DEBUGPRT(13)
+			_DEBUGPRT(103)
 		elif len(gt)==0:
-			_DEBUGPRT(14)
+			_DEBUGPRT(104)
 		else:
 			self.theme = th
-			self.name = name.strip()
+			self.name = n.strip()
 			self.width = w
 			self.height = h
 			self.tiles = t
@@ -113,16 +115,15 @@ class canvas:
 	def addtilecustom(self, tile):
 		name=str(self.graphictile.__len__()) + ', '
 		if name in self.tiles:
-			pass
+			pass 
 		else:
 			self.tiles.append(name)
 			self.graphictile.append([name, tile])
 
 if __name__ == '__main__':
 	tiledict = {'air':' ','stone':'\u2588', 'water':'\u2591', 'box':'\u25A1', 'box_filled ':'\u25A0', 'dagger':'\u2020', 'line':'\u2500', 'bullet':'\u2219', 'empty_bullet':'\u25E6', 'pointer_left':'\u2190', 'pointer_up':'\u2191', 'pointer_right':'\u2192', 'pointer_down':'\u2193', 'pointer_leftright':'\u2194', 'pointer_topbtm':'\u2195', 'w_face':'\u263A', 'b_face':'\u263B', 'note':'\u266A', 'note_beam':'\u266B', 'thiccline':'\u25AC', 'wave':'\u2248', 'sun':'\u263C', 'heart':'\u2665', 'triangle_top':'\u25b2', 'triangle_right':'\u25ba', 'triangle_btm':'\u25bc', 'triangle_left':'\u25c4', 'lozenge':'\u25CA', 'diamond_filled':'\u2666', 'bitcoin':'\u20BF', 'circle':'\u20DD', 'star':'\u2736'}
-	map1 = canvas('  Testing canvas ', 19,7, list(tiledict.keys()), list(tiledict.values()), 0, 'oneline')
-	#map1.settilecustom(0,1, 'a')
-	w=19
+	w,h=17,5
+	map1 = canvas(w,h, list(tiledict.keys()),list(tiledict.values()), n=' Testing canvas ')
 	for n in range(len(list(tiledict.keys()))):
 		if n%w==0: o=w;
 		for i in range(w):
