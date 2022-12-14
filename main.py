@@ -1,132 +1,151 @@
+""" Imports """
+from sys import exit as quitprog
+from ast import literal_eval
+
 themelist = {
-	'twoline':{'topleft':'\u2554', 'topright':'\u2557', 'btmleft':'\u255A', 'btmright':'\u255D', 'topbtm':'\u2550', 'leftright':'\u2551', 'close':'\u2561', 'open':'\u255E'},
-	'oneline':{'topleft':'\u250C', 'topright':'\u2510', 'btmleft':'\u2514', 'btmright':'\u2518', 'topbtm':'\u2500', 'leftright':'\u2502', 'close':'\u2524', 'open':'\u251C'},
+    'twoline':{
+        'tl':'\u2554', 'tr':'\u2557', 'bl':'\u255A', 'br':'\u255D',
+        'tb':'\u2550', 'lr':'\u2551', 'cl':'\u2561', 'op':'\u255E'
+    },
+    'oneline':{
+    'tl':'\u250C', 'tr':'\u2510', 'bl':'\u2514', 'br':'\u2518',
+    'tb':'\u2500', 'lr':'\u2502', 'cl':'\u2524', 'op':'\u251C'
+    },
 }
 
-def _DEBUGPRT(errcode):
-	# ?
-	if errcode==0:
-		pass
+def _errprt(errcode):
+    """ Print error with errorcode given. """
+    # ?
+    if errcode==0:
+        pass
 
-	# Create canvas errors
-	elif errcode==101:
-		print('[INP] The Width is too small.')
-	elif errcode==102:
-		print('[INP] The Height is too small.')
-	elif errcode==103:
-		print('[INP] The tiles list is empty.')
-	elif errcode==104:
-		print('[INP] The graphical tiles list is empty.')
-	elif errcode==105:
-		print('[INP] The default tile is lower than 0.')
+    # Create canvas errors
+    elif errcode==101:
+        print('[INP] The Width is too small.')
+    elif errcode==102:
+        print('[INP] The Height is too small.')
+    elif errcode==103:
+        print('[INP] The tiles list is empty.')
+    elif errcode==104:
+        print('[INP] The graphical tiles list is empty.')
+    elif errcode==105:
+        print('[INP] The default tile is lower than 0.')
 
-	# settile errors
-	elif errcode==201:
-		print('[SET] The x is out of canvas.')
-	elif errcode==202:
-		print('[SET] The y is out of canvas.')
-	elif errcode==203:
-		print('[SET] The tile id is not exist.')
-		
-	elif errcode==69:
-		print('[TST] Test Text')
+    # settile errors
+    elif errcode==201:
+        print('[SET] The x is out of canvas.')
+    elif errcode==202:
+        print('[SET] The y is out of canvas.')
+    elif errcode==203:
+        print('[SET] The tile id is not exist.')
+    elif errcode==69:
+        print('[TST] Test Text')
 
-	exit(1)
-	
+    quitprog(1)
+    
+class Canvas:
+    """ A window-style canvas for graw thing on it. """
+    default=[(16,7),['air', 'block'],[' ', '\u2588']]
+    def __init__(self, csize=default[0], tilelist=default[1],
+        graphtile=default[2], dti=0, theme='twoline', name='Test'):
+        width,height = csize
+        if width<16:
+            _errprt(101)
+        elif height<5:
+            _errprt(102)
+        elif dti<0:
+            _errprt(105)
+        elif len(tilelist)==0:
+            _errprt(103)
+        elif len(graphtile)==0:
+            _errprt(104)
+        else:
+            self.theme = theme
+            self.name = name.strip()
+            self.width = width
+            self.height = height
+            self.tiles = tilelist
+            self.defaulttile = dti
+            width_gen=[]
+            for i in range(height):
+                height_gen=[]
+                for i in range(width):
+                    height_gen.append(dti)
+                width_gen.append(height_gen)
+            self.graphictile = list([str(graphtile.index(i))+', ', i[0]] for i in graphtile)
+            self.map = width_gen
 
-class canvas:
-	def __init__(self, w=16,h=7, t=['air', 'block'], gt=[' ', '\u2588'], dti=0, th='twoline', n='Test'):
-		if w<16:
-			_DEBUGPRT(101)
-		elif h<5:
-			_DEBUGPRT(102)
-		elif dti<0:
-			_DEBUGPRT(105)
-		elif len(t)==0:
-			_DEBUGPRT(103)
-		elif len(gt)==0:
-			_DEBUGPRT(104)
-		else:
-			self.theme = th
-			self.name = n.strip()
-			self.width = w
-			self.height = h
-			self.tiles = t
-			self.defaulttile = dti
-			m=[]
-			for i in range(h):
-				l=[]
-				for i in range(w):
-					l.append(dti)
-				m.append(l)
-			self.graphictile = list([str(gt.index(i))+', ', i[0]] for i in gt)
-			self.map = m
+    def list_print(self):
+        """ print canvas like a list """
+        return self.map
 
-	def prmap(self):
-		return self.map
+    def fancy_print(self):
+        """ Print canvas human readable """
+        theme=themelist[self.theme]
 
-	def fancymap(self):
-		theme=themelist[self.theme]
+        bottom = theme["tb"] * (self.width + 2)
+        if len(self.name) < self.width-1:
+            top = theme["tb"]+theme["cl"]+self.name+theme["op"]+(theme["tb"]*(self.width-1-len(self.name)))
+        else:
+            top = f'{theme["tb"]}{theme["cl"]} UnbndName {theme["op"]}'+(theme["tb"]*self.width-12)
 
-		bottom = theme["topbtm"] * (self.width + 2)
-		if len(self.name) < self.width-1:
-			top = theme["topbtm"] + theme["close"] + self.name + theme["open"] + (theme["topbtm"] * (self.width - 1 - len(self.name)))
-		else:
-			top = f'{theme["topbtm"]}{theme["close"]} UnbndName {theme["open"]}' + (theme["topbtm"] * (self.width - 12))
+        pmap=str(self.map)[1:-1]
+        gt_loop=self.graphictile[:]
+        gt_loop.reverse()
+        gtloop_len=len(gt_loop)
+        pmap = pmap.replace(']', ', ]')
+        for i in range(gtloop_len):
+            pmap = pmap.replace(*gt_loop[i])
+        pmap = pmap.replace('], ', ']\n')
+        pmap = pmap.replace('[', f'{theme["lr"]} ')
+        pmap = pmap.replace(']', f' {theme["lr"]}')
+        return f'{theme["tl"]}{top}{theme["tr"]}\n{pmap}\n{theme["bl"]}{bottom}{theme["br"]}'
 
-		pmap=str(self.map)[1:-1]
-		gt_loop=self.graphictile[:]
-		gt_loop.reverse()
-		gtloop_len=gt_loop.__len__()
-		pmap = pmap.replace(']', ', ]')
-		for i in range(gtloop_len):
-			#print(f'{i}: {gt_loop[i]}')
-			pmap = pmap.replace(*gt_loop[i])
-		pmap = pmap.replace('], ', ']\n')
-		pmap = pmap.replace('[', f'{theme["leftright"]} ')
-		pmap = pmap.replace(']', f' {theme["leftright"]}')
-		return f'{theme["topleft"]}{top}{theme["topright"]}\n{pmap}\n{theme["btmleft"]}{bottom}{theme["btmright"]}'
+    def settile(self, tile_x,tile_y, tileid):
+        """ Set a specefic tile """
+        if tile_x > self.width:
+            _errprt(201)
+        elif tile_y > self.height:
+            _errprt(202)
+        elif tileid > len(self.tiles):
+            _errprt(203)
+        else:
+            self.map[tile_y][tile_x] = tileid
 
-	def settile(self, x,y, tileid):
-		if x > self.width:
-			_DEBUGPRT(201)
-		elif y > self.height:
-			_DEBUGPRT(202)
-		elif tileid > len(self.tiles):
-			_DEBUGPRT(203)
-		else:
-			self.map[y][x] = tileid
+    def gettile(self, tile_x,tile_y):
+        """ Get tile char """
+        return self.map[tile_y][tile_x]
 
-	def gettile(self, x,y):
-		return self.map[y][x]
+    def setcustomtile(self, tile_x,tile_y, tile):
+        """ Adding a custom tile and adding it in canvas """
+        name=str(len(self.graphictile)) + ', '
+        if name in self.tiles:
+            self.map[tile_y][tile_x] = self.tiles.index(name)
+        else:
+            self.tiles.append(name)
+            self.graphictile.append([name, tile])
+            self.map[tile_y][tile_x] = self.tiles.index(name)
 
-	def setdragtile(self, x1,y1, x2,y2):
-		pass
-
-	def settilecustom(self, x,y, tile):
-		name=str(self.graphictile.__len__()) + ', '
-		if name in self.tiles:
-			self.map[y][x] = self.tiles.index(name)
-		else:
-			self.tiles.append(name)
-			self.graphictile.append([name, tile])
-			self.map[y][x] = self.tiles.index(name)
-
-	def addtilecustom(self, tile):
-		name=str(self.graphictile.__len__()) + ', '
-		if name in self.tiles:
-			pass 
-		else:
-			self.tiles.append(name)
-			self.graphictile.append([name, tile])
+    def addcustomtile(self, tile):
+        """ Adding a custom tile without adding in canvas """
+        name=str(len(self.graphictile)) + ', '
+        if name in self.tiles:
+            pass 
+        else:
+            self.tiles.append(name)
+            self.graphictile.append([name, tile])
 
 if __name__ == '__main__':
-	tiledict = {'air':' ','stone':'\u2588', 'water':'\u2591', 'box':'\u25A1', 'box_filled ':'\u25A0', 'dagger':'\u2020', 'line':'\u2500', 'bullet':'\u2219', 'empty_bullet':'\u25E6', 'pointer_left':'\u2190', 'pointer_up':'\u2191', 'pointer_right':'\u2192', 'pointer_down':'\u2193', 'pointer_leftright':'\u2194', 'pointer_topbtm':'\u2195', 'w_face':'\u263A', 'b_face':'\u263B', 'note':'\u266A', 'note_beam':'\u266B', 'thiccline':'\u25AC', 'wave':'\u2248', 'sun':'\u263C', 'heart':'\u2665', 'triangle_top':'\u25b2', 'triangle_right':'\u25ba', 'triangle_btm':'\u25bc', 'triangle_left':'\u25c4', 'lozenge':'\u25CA', 'diamond_filled':'\u2666', 'bitcoin':'\u20BF', 'circle':'\u20DD', 'star':'\u2736'}
-	w,h=17,5
-	map1 = canvas(w,h, list(tiledict.keys()),list(tiledict.values()), n=' Testing canvas ')
-	for n in range(len(list(tiledict.keys()))):
-		if n%w==0: o=w;
-		for i in range(w):
-			if (n+(i+1))%w==0: o=(w-1)-i;
-		map1.settile(o,(n)//w, n)
-	print(map1.fancymap())
+    with open('default.tiles', encoding='utf8') as file:
+        tiledict = literal_eval(file.read())
+    canvas_size=(17,5)
+    WIDTH=canvas_size[0]
+    map1 = Canvas(canvas_size,list(tiledict.keys()),list(tiledict.values()),name=' Testing canvas ')
+    for n in range(len(list(tiledict.keys()))):
+        if n%WIDTH==0:
+            WID=WIDTH
+        for num in range(WIDTH):
+            if (n+(num+1))%WIDTH==0:
+                WID=(WIDTH-1)-num
+        map1.settile(WID,(n)//WIDTH, n)
+    print(map1.fancy_print())
