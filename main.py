@@ -1,22 +1,34 @@
 def _DEBUGPRT(errcode):
+	# ?
 	if errcode==-1:
 		pass
-	elif errcode==11:
-		print('[I] The Width is too small.')
-	elif errcode==12:
-		print('[I] The Height is too small.')
-	elif errcode==13:
-		print('[I] The tiles list is empty.')
-	elif errcode==14:
-		print('[I] The graphical tiles list is empty.')
-	elif errcode==14:
-		print('[I] The default tile is lower than 0.')
+
+	# Create canvas errors
+	elif errcode==101:
+		print('[INP] The Width is too small.')
+	elif errcode==102:
+		print('[INP] The Height is too small.')
+	elif errcode==103:
+		print('[INP] The tiles list is empty.')
+	elif errcode==104:
+		print('[INP] The graphical tiles list is empty.')
+	elif errcode==105:
+		print('[INP] The default tile is lower than 0.')
+
+	# settile errors
+	elif errcode==201:
+		print('[SET] The x is out of canvas.')
+	elif errcode==202:
+		print('[SET] The y is out of canvas.')
+	elif errcode==203:
+		print('[SET] The tile id is not exist.')
+		
 	elif errcode==69:
-		print('[T] Test Text')
+		print('[TST] Test Text')
 	
 
 class canvas:
-	def __init__(self, name='Test', w=16,h=7, t=['air', 'block'], gt=[' ', '\u2588'], dti=0):
+	def __init__(self, name='Test', w=16,h=7, t=['air', 'block'], gt=[' ', '\u2588'], dti=0, test=True):
 		if w<16:
 			_DEBUGPRT(11)
 		elif h<7:
@@ -66,7 +78,14 @@ class canvas:
 		return f'\u2554{top}\u2557\n{pmap}\n\u255A{bottom}\u255D'
 
 	def settile(self, x,y, tileid):
-		self.map[y][x] = tileid
+		if x > self.width:
+			_DEBUGPRT(201)
+		elif y > self.height:
+			_DEBUGPRT(202)
+		elif tileid > len(self.tiles):
+			_DEBUGPRT(203)
+		else:
+			self.map[y][x] = tileid
 
 	def gettile(self, x,y):
 		return self.map[y][x]
@@ -93,15 +112,19 @@ class canvas:
 
 if __name__ == '__main__':
 	tiles = [
-		['air','stone','water', 'box', 'thiccline', 'dagger', 'line', 'dot', 
-			'left', 'up', 'right', 'down'],
-		[' ', '\u2588', '\u2591', '\u25A1', '\u25AC', '\u2020', '\u2500', '\u2219',
-			'\u2190', '\u2191', '\u2192', '\u2193']
+		['air',       'stone',  'water', 'box',
+		'thiccline',  'dagger', 'line',  'dot',
+		'left',       'up',     'right', 'down',
+		'w face',     'b face', 'note', 'beam note',
+		'filled box', ],
+		[' ',     '\u2588', '\u2591', '\u25A1',
+		'\u25AC', '\u2020', '\u2500', '\u2219',
+		'\u2190', '\u2191', '\u2192', '\u2193',
+		'\u263A', '\u263B', '\u266A', '\u266B',
+		'\u25A0', ]
 	]
-	map1 = canvas('  Testing a canvas   ', 33,7, tiles[0], tiles[1], 0)
-	map1.settilecustom(0,1, 'a')
+	map1 = canvas('  Testing a canvas   ', 19,7, tiles[0], tiles[1], 0)
+	#map1.settilecustom(0,1, 'a')
 	for i in range(tiles[0].__len__()):
 		map1.settile(i,0, i)
-	map1.addtilecustom('b')
-	map1.settile(1,1, 13)
 	print(map1.fancymap())
