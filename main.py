@@ -58,11 +58,14 @@ class canvas:
 		return self.map
 
 	def fancymap(self):
-		bottom = '\u2550' * (self.width + 2)
-		if len(self.name) < self.width-2:
-			top = '\u2550\u2561' + self.name + '\u255E' + ('\u2550' * (self.width - 1 - len(self.name)))
+		theme={'topleft':'\u2554', 'topright':'\u2557', 'btmleft':'\u255A', 'btmright':'\u255D',
+		'topbtm':'\u2550', 'leftright':'\u2551', 'close':'\u2561', 'open':'\u255E'}
+
+		bottom = theme["topbtm"] * (self.width + 2)
+		if len(self.name) < self.width-1:
+			top = theme["topbtm"] + theme["close"] + self.name + '\u255E' + ('\u2550' * (self.width - 1 - len(self.name)))
 		else:
-			top = '\u2550\u2561 UnbndName \u255E' + ('\u2550' * (self.width - 12))
+			top = f'{theme["topbtm"]}{theme["close"]} UnbndName {theme["open"]}' + (theme["topbtm"] * (self.width - 12))
 
 		pmap=str(self.map)[1:-1]
 		gt_loop=self.graphictile[:]
@@ -75,7 +78,7 @@ class canvas:
 		pmap = pmap.replace('], ', ']\n')
 		pmap = pmap.replace('[', '\u2551 ')
 		pmap = pmap.replace(']', ' \u2551')
-		return f'\u2554{top}\u2557\n{pmap}\n\u255A{bottom}\u255D'
+		return f'{theme["topleft"]}{top}{theme["topright"]}\n{pmap}\n{theme["btmleft"]}{bottom}{theme["btmright"]}'
 
 	def settile(self, x,y, tileid):
 		if x > self.width:
@@ -111,20 +114,13 @@ class canvas:
 			self.graphictile.append([name, tile])
 
 if __name__ == '__main__':
-	tiles = [
-		['air',       'stone',  'water', 'box',
-		'thiccline',  'dagger', 'line',  'dot',
-		'left',       'up',     'right', 'down',
-		'w face',     'b face', 'note', 'beam note',
-		'filled box', ],
-		[' ',     '\u2588', '\u2591', '\u25A1',
-		'\u25AC', '\u2020', '\u2500', '\u2219',
-		'\u2190', '\u2191', '\u2192', '\u2193',
-		'\u263A', '\u263B', '\u266A', '\u266B',
-		'\u25A0', ]
-	]
-	map1 = canvas('  Testing a canvas   ', 19,7, tiles[0], tiles[1], 0)
+	tiledict = {'air':' ','stone':'\u2588', 'water':'\u2591', 'box':'\u25A1',
+		'thiccline':'\u25AC', 'dagger':'\u2020', 'line':'\u2500', 'dot':'\u2219',
+		'left':'\u2190', 'up':'\u2191', 'right':'\u2192', 'down':'\u2193',
+		'w face':'\u263A', 'b face':'\u263B', 'note':'\u266A', 'notebeam':'\u266B',
+		'boxfilled ':'\u25A0'}
+	map1 = canvas('  Testing a canvas ', 19,7, list(tiledict.keys()), list(tiledict.values()), 0)
 	#map1.settilecustom(0,1, 'a')
-	for i in range(tiles[0].__len__()):
+	for i in range(len(list(tiledict.keys()))):
 		map1.settile(i,0, i)
 	print(map1.fancymap())
