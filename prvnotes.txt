@@ -1,0 +1,34 @@
+O | 1 2 3 1 2 3 1 2 3
+N | 1 2 3 4 5 6 7 8 9
+
+if n%3==0:
+	o=3
+elif (n+1)%3==0:
+	o=2
+elif (n+2)%3==0:
+	o=1
+
+
+
+
+map1 = canvas('  Testing canvas ', 19,7, list(tiledict.keys()), list(tiledict.values()), 0, 'oneline')
+#map1.settilecustom(0,1, 'a')
+w=19
+for n in range(len(list(tiledict.keys()))):
+	if n%w==0: o=w;
+	for i in range(w):
+		if (n+(i+1))%w==0: o=(w-1)-i;
+	map1.settile(o,(n+1)//w, n)
+print(map1.fancymap())
+
+
+tiledict = {'air':' ','stone':'\u2588', 'water':'\u2591', 'box':'\u25A1',
+	'thiccline':'\u25AC', 'dagger':'\u2020', 'line':'\u2500', 'dot':'\u2219',
+	'left':'\u2190', 'up':'\u2191', 'right':'\u2192', 'down':'\u2193',
+	'w face':'\u263A', 'b face':'\u263B', 'note':'\u266A', 'notebeam':'\u266B',
+	'boxfilled ':'\u25A0', 'wave':'\u2248', 'sun':'\u263C'}
+map1 = canvas('  Testing canvas ', 19,7, list(tiledict.keys()), list(tiledict.values()), 0, 'oneline')
+#map1.settilecustom(0,1, 'a')
+for i in range(len(list(tiledict.keys()))):
+	map1.settile(i,0, i)
+print(map1.fancymap())
