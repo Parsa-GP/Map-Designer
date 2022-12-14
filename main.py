@@ -1,3 +1,8 @@
+themelist = {
+	'twoline':{'topleft':'\u2554', 'topright':'\u2557', 'btmleft':'\u255A', 'btmright':'\u255D', 'topbtm':'\u2550', 'leftright':'\u2551', 'close':'\u2561', 'open':'\u255E'},
+	'oneline':{'topleft':'\u250C', 'topright':'\u2510', 'btmleft':'\u2514', 'btmright':'\u2518', 'topbtm':'\u2500', 'leftright':'\u2502', 'close':'\u2524', 'open':'\u251C'},
+}
+
 def _DEBUGPRT(errcode):
 	# ?
 	if errcode==-1:
@@ -28,7 +33,7 @@ def _DEBUGPRT(errcode):
 	
 
 class canvas:
-	def __init__(self, name='Test', w=16,h=7, t=['air', 'block'], gt=[' ', '\u2588'], dti=0, test=True):
+	def __init__(self, name='Test', w=16,h=7, t=['air', 'block'], gt=[' ', '\u2588'], dti=0, th='twoline'):
 		if w<16:
 			_DEBUGPRT(11)
 		elif h<7:
@@ -40,6 +45,7 @@ class canvas:
 		elif len(gt)==0:
 			_DEBUGPRT(14)
 		else:
+			self.theme = th
 			self.name = name.strip()
 			self.width = w
 			self.height = h
@@ -58,12 +64,11 @@ class canvas:
 		return self.map
 
 	def fancymap(self):
-		theme={'topleft':'\u2554', 'topright':'\u2557', 'btmleft':'\u255A', 'btmright':'\u255D',
-		'topbtm':'\u2550', 'leftright':'\u2551', 'close':'\u2561', 'open':'\u255E'}
+		theme=themelist[self.theme]
 
 		bottom = theme["topbtm"] * (self.width + 2)
 		if len(self.name) < self.width-1:
-			top = theme["topbtm"] + theme["close"] + self.name + '\u255E' + ('\u2550' * (self.width - 1 - len(self.name)))
+			top = theme["topbtm"] + theme["close"] + self.name + theme["open"] + (theme["topbtm"] * (self.width - 1 - len(self.name)))
 		else:
 			top = f'{theme["topbtm"]}{theme["close"]} UnbndName {theme["open"]}' + (theme["topbtm"] * (self.width - 12))
 
@@ -76,8 +81,8 @@ class canvas:
 			#print(f'{i}: {gt_loop[i]}')
 			pmap = pmap.replace(*gt_loop[i])
 		pmap = pmap.replace('], ', ']\n')
-		pmap = pmap.replace('[', '\u2551 ')
-		pmap = pmap.replace(']', ' \u2551')
+		pmap = pmap.replace('[', f'{theme["leftright"]} ')
+		pmap = pmap.replace(']', f' {theme["leftright"]}')
 		return f'{theme["topleft"]}{top}{theme["topright"]}\n{pmap}\n{theme["btmleft"]}{bottom}{theme["btmright"]}'
 
 	def settile(self, x,y, tileid):
@@ -114,13 +119,13 @@ class canvas:
 			self.graphictile.append([name, tile])
 
 if __name__ == '__main__':
-	tiledict = {'air':' ','stone':'\u2588', 'water':'\u2591', 'box':'\u25A1',
-		'thiccline':'\u25AC', 'dagger':'\u2020', 'line':'\u2500', 'dot':'\u2219',
-		'left':'\u2190', 'up':'\u2191', 'right':'\u2192', 'down':'\u2193',
-		'w face':'\u263A', 'b face':'\u263B', 'note':'\u266A', 'notebeam':'\u266B',
-		'boxfilled ':'\u25A0'}
-	map1 = canvas('  Testing a canvas ', 19,7, list(tiledict.keys()), list(tiledict.values()), 0)
+	tiledict = {'air':' ','stone':'\u2588', 'water':'\u2591', 'box':'\u25A1', 'box_filled ':'\u25A0', 'dagger':'\u2020', 'line':'\u2500', 'bullet':'\u2219', 'empty_bullet':'\u25E6', 'pointer_left':'\u2190', 'pointer_up':'\u2191', 'pointer_right':'\u2192', 'pointer_down':'\u2193', 'pointer_leftright':'\u2194', 'pointer_topbtm':'\u2195', 'w_face':'\u263A', 'b_face':'\u263B', 'note':'\u266A', 'note_beam':'\u266B', 'thiccline':'\u25AC', 'wave':'\u2248', 'sun':'\u263C', 'heart':'\u2665', 'triangle_top':'\u25b2', 'triangle_right':'\u25ba', 'triangle_btm':'\u25bc', 'triangle_left':'\u25c4', 'lozenge':'\u25CA', 'diamond_filled':'\u2666', 'bitcoin':'\u20BF', 'circle':'\u20DD', 'star':'\u2736'}
+	map1 = canvas('  Testing canvas ', 19,7, list(tiledict.keys()), list(tiledict.values()), 0, 'oneline')
 	#map1.settilecustom(0,1, 'a')
-	for i in range(len(list(tiledict.keys()))):
-		map1.settile(i,0, i)
+	w=19
+	for n in range(len(list(tiledict.keys()))):
+		if n%w==0: o=w;
+		for i in range(w):
+			if (n+(i+1))%w==0: o=(w-1)-i;
+		map1.settile(o,(n)//w, n)
 	print(map1.fancymap())
