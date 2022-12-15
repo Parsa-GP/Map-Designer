@@ -1,2 +1,3 @@
-# Map Designer
- A Map Designer for 2D Gmaes | Made with: Python
+## A Map Designer for 2D Gmaes
+Made with: Python
+###### *Still in development*
